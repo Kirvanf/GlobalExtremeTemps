@@ -1,0 +1,89 @@
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import org.jsoup.*;
+import org.jsoup.nodes.Document;
+public class ExtremeTemps {
+
+	
+public ExtremeTemps(){
+	
+}
+
+public void getHighandLow(){	
+double temp = 0;
+String name = "";
+ArrayList<CityWeather> cityArray = new ArrayList<CityWeather>();
+try{
+    //Puts the raw HTML into a string file
+		Document tempWeb = Jsoup.connect("https://www.timeanddate.com/weather/?low=4").get();
+		String s = tempWeb.toString();
+		/*
+    System.out.println(s); I used this to find the characteristics before and after the names
+    and then write a method to parse the string
+    */
+		double highTemp = 0;
+		String cityName= "";
+		String cityName2 = "";
+    //before every city name was "weather/" so I found each instance and saved the name
+		for(int k = 0; k<s.length();k++){
+		int inSub = s.indexOf("weather/");
+		try{
+		s = s.substring(inSub + 9);
+		int begName = s.indexOf("/");
+		int endName = s.indexOf("\">");
+		name = s.substring(begName + 1,endName);
+    //cuts that city out of the string after I've saved it
+		s = s.substring(endName);}
+		catch(StringIndexOutOfBoundsException e){
+			}
+  //doing the same thing for the temperature
+	int numSub= s.indexOf("&nbsp");
+	if(numSub != -1){
+	s = s.substring(numSub - 3);
+	String nameTemp = s.substring(0,3);
+			try{
+		if(nameTemp.charAt(1) == '>'){
+			nameTemp = nameTemp.substring(2);
+		}
+		if(nameTemp.charAt(0) == '>'){
+		nameTemp = nameTemp.substring(1);
+		}
+		//System.out.println("temp = " + nameTemp);
+		temp = Integer.parseInt(nameTemp);
+	}
+	
+	catch(NumberFormatException d){
+	}
+	CityWeather x = new CityWeather(name,temp);
+	cityArray.add(x);
+}
+}
+for(int l = 0;l<cityArray.size();l++){
+	if(highTemp < cityArray.get(l).getTemp()){
+		highTemp = cityArray.get(l).getTemp();
+		cityName = cityArray.get(l).getName();
+	}
+}
+double lowTemp = 100;
+for(int l = 0;l<cityArray.size();l++){
+	if(lowTemp > cityArray.get(l).getTemp() && cityArray.get(l).getTemp() != 0.0){
+		lowTemp = cityArray.get(l).getTemp();
+		cityName2 = cityArray.get(l).getName();
+	}
+}
+CityWeather low = new CityWeather(cityName2, lowTemp);
+CityWeather high = new CityWeather(cityName,highTemp);
+System.out.println("highest temperature is " + high.getName() + " " +  high.getTemp());
+System.out.println("lowest temperature is " + low.getName() + " " +  low.getTemp());
+}
+catch(IOException e){
+	System.err.println("Caught IOExeption " +e.getMessage());
+	
+}
+}
+public static void main(String [] args){
+ExtremeTemps et = new ExtremeTemps();
+et.getHighandLow();
+}
+}
