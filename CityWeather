@@ -1,0 +1,18 @@
+import org.jsoup.*;
+import org.jsoup.nodes.*;
+public class CityWeather {
+
+	private String name;
+	private double temp;
+	public CityWeather(String nm, double x){
+		name = nm;
+		temp = x;
+	}
+	public String getName(){
+		return name;
+	}
+	public double getTemp(){
+		return temp;
+	}
+}
+
